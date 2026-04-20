@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:6432/rm
+    username: appuser
+    password: postgres
+  cloud:
+    gcp:
+      pubsub:
+        emulator-host: localhost:8538
+        project-id: our-project
+
+
+notifyserviceconfigfile: dummy-notify-config.json
+
+exceptionmanager:
+  connection:
+    scheme: http
+    host: localhost
+    port: 8667

@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:15435/rm
+    username: appuser
+    password: postgres
+
+  cloud:
+    gcp:
+      pubsub:
+        emulator-host: localhost:18540
+        project-id: our-project
+
+notifyserviceconfigfile: src/test/resources/dummy-test-notify-config.json
+
+uacservice:
+  connection:
+      port: 18166
+
+exceptionmanager:
+  connection:
+    scheme: http
+    host: localhost
+    port: 8667
+
+queueconfig:
+  sms-confirmation-topic: rm-internal-sms-confirmation-dummy
+  email-confirmation-topic: rm-internal-email-confirmation-dummy
+
+springdoc:
+  writer-with-order-by-keys: true

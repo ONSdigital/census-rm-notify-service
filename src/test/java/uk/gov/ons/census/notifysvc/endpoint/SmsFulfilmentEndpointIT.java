@@ -36,13 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.ons.census.common.model.entity.Case;
 import uk.gov.ons.census.common.model.entity.CollectionExercise;
-import uk.gov.ons.census.common.model.entity.CollectionInstrumentSelectionRule;
 import uk.gov.ons.census.common.model.entity.FulfilmentSurveySmsTemplate;
 import uk.gov.ons.census.common.model.entity.SmsTemplate;
 import uk.gov.ons.census.common.model.entity.Survey;
-import uk.gov.ons.census.common.validation.ColumnValidator;
-import uk.gov.ons.census.common.validation.MandatoryRule;
-import uk.gov.ons.census.common.validation.Rule;
 import uk.gov.ons.census.notifysvc.model.dto.NotifyApiSendSmsResponse;
 import uk.gov.ons.census.notifysvc.model.dto.api.RequestDTO;
 import uk.gov.ons.census.notifysvc.model.dto.api.RequestHeaderDTO;
@@ -120,10 +116,7 @@ class SmsFulfilmentEndpointIT {
     Survey survey = new Survey();
     survey.setId(UUID.randomUUID());
     survey.setName("TEST SURVEY");
-    survey.setSampleValidationRules(
-        new ColumnValidator[] {
-          new ColumnValidator("Junk", false, new Rule[] {new MandatoryRule()})
-        });
+
     survey.setSampleSeparator(',');
     survey.setSampleDefinitionUrl("http://junk");
     survey = surveyRepository.saveAndFlush(survey);
@@ -136,16 +129,12 @@ class SmsFulfilmentEndpointIT {
     collectionExercise.setStartDate(OffsetDateTime.now());
     collectionExercise.setEndDate(OffsetDateTime.now().plusDays(2));
     collectionExercise.setMetadata(TEST_COLLECTION_EXERCISE_UPDATE_METADATA);
-    collectionExercise.setCollectionInstrumentSelectionRules(
-        new CollectionInstrumentSelectionRule[] {
-          new CollectionInstrumentSelectionRule(0, null, "testInstrumentUrl", null)
-        });
+
     collectionExercise = collectionExerciseRepository.saveAndFlush(collectionExercise);
 
     Case testCase = new Case();
     testCase.setId(UUID.randomUUID());
     testCase.setCollectionExercise(collectionExercise);
-    testCase.setSample(Map.of());
     testCase = caseRepository.saveAndFlush(testCase);
 
     SmsTemplate smsTemplate = new SmsTemplate();

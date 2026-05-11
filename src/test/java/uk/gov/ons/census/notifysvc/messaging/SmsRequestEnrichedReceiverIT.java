@@ -28,9 +28,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ons.census.common.model.entity.*;
-import uk.gov.ons.census.common.validation.ColumnValidator;
-import uk.gov.ons.census.common.validation.MandatoryRule;
-import uk.gov.ons.census.common.validation.Rule;
 import uk.gov.ons.census.notifysvc.model.dto.NotifyApiSendSmsResponse;
 import uk.gov.ons.census.notifysvc.model.dto.event.EventDTO;
 import uk.gov.ons.census.notifysvc.model.dto.event.SmsRequestEnriched;
@@ -103,10 +100,6 @@ class SmsRequestEnrichedReceiverIT {
     Survey survey = new Survey();
     survey.setId(UUID.randomUUID());
     survey.setName("TEST SURVEY");
-    survey.setSampleValidationRules(
-        new ColumnValidator[] {
-          new ColumnValidator("Junk", false, new Rule[] {new MandatoryRule()})
-        });
     survey.setSampleSeparator(',');
     survey.setSampleDefinitionUrl("http://junk");
     survey = surveyRepository.saveAndFlush(survey);
@@ -119,16 +112,11 @@ class SmsRequestEnrichedReceiverIT {
     collectionExercise.setStartDate(OffsetDateTime.now());
     collectionExercise.setEndDate(OffsetDateTime.now().plusDays(2));
     collectionExercise.setMetadata(TEST_COLLECTION_EXERCISE_UPDATE_METADATA);
-    collectionExercise.setCollectionInstrumentSelectionRules(
-        new CollectionInstrumentSelectionRule[] {
-          new CollectionInstrumentSelectionRule(0, null, "testInstrumentUrl", null)
-        });
     collectionExercise = collectionExerciseRepository.saveAndFlush(collectionExercise);
 
     Case testCase = new Case();
     testCase.setId(UUID.randomUUID());
     testCase.setCollectionExercise(collectionExercise);
-    testCase.setSample(Map.of());
     testCase = caseRepository.saveAndFlush(testCase);
 
     SmsTemplate smsTemplate = new SmsTemplate();

@@ -1,13 +1,12 @@
 package uk.gov.ons.census.notifysvc.utils;
 
-import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.ons.census.notifysvc.utils.Constants.TEMPLATE_QID_KEY;
 import static uk.gov.ons.census.notifysvc.utils.Constants.TEMPLATE_REQUEST_PREFIX;
-import static uk.gov.ons.census.notifysvc.utils.Constants.TEMPLATE_SENSITIVE_PREFIX;
 import static uk.gov.ons.census.notifysvc.utils.Constants.TEMPLATE_UAC_KEY;
 
 import java.util.Map;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.Test;
 import uk.gov.ons.census.common.model.entity.Case;
 
@@ -21,11 +20,11 @@ class PersonalisationTemplateHelperTest {
   void testBuildPersonalisationFromTemplate() {
     // Given
     String[] template =
-        new String[] {TEMPLATE_UAC_KEY, TEMPLATE_QID_KEY, "foo", TEMPLATE_SENSITIVE_PREFIX + "foo"};
+        new String[] {
+          TEMPLATE_UAC_KEY, TEMPLATE_QID_KEY, "UPRN",
+        };
 
-    Case testCase = new Case();
-    testCase.setSample(Map.ofEntries(entry("foo", "bar")));
-    testCase.setSampleSensitive(Map.ofEntries(entry("foo", "secretBar")));
+    Case testCase = getTestCase();
 
     // When
     Map<String, String> personalisationValues =
@@ -36,8 +35,36 @@ class PersonalisationTemplateHelperTest {
     assertThat(personalisationValues)
         .containsEntry(TEMPLATE_UAC_KEY, TEST_UAC)
         .containsEntry(TEMPLATE_QID_KEY, TEST_QID)
-        .containsEntry("foo", "bar")
-        .containsEntry(TEMPLATE_SENSITIVE_PREFIX + "foo", "secretBar");
+        .containsEntry("UPRN", "1234567890");
+  }
+
+  private static @NonNull Case getTestCase() {
+    Case testCase = new Case();
+    testCase.setTreatmentCode("HH_QP3E");
+    testCase.setAddressType("H");
+    testCase.setUprn("1234567890");
+    testCase.setEstabUprn("1234567890");
+    testCase.setEstabType("HOUSEHOLD");
+    testCase.setAddressLine1("123 Fake Street");
+    testCase.setTownName("Testington");
+    testCase.setRegion("E");
+    testCase.setPostcode("NP10 111");
+    testCase.setAddressType("HH");
+    testCase.setAddressLevel("U");
+    testCase.setAbpCode("ABC123");
+    testCase.setFieldCoordinatorId("ABCD1234");
+    testCase.setFieldOfficerId("ABCD1234");
+    testCase.setOa("A12345678");
+    testCase.setLsoa("A12345678");
+    testCase.setMsoa("A12345678");
+    testCase.setLad("ABC123");
+    testCase.setHtcDigital("1");
+    testCase.setHtcWillingness("1");
+    testCase.setLatitude("51.5074");
+    testCase.setLongitude("0.1278");
+    testCase.setPrintBatch("1");
+    testCase.setSecureEstablishment(false);
+    return testCase;
   }
 
   @Test
@@ -79,49 +106,26 @@ class PersonalisationTemplateHelperTest {
   @Test
   void testBuildPersonalisationFromTemplateJustSampleFields() {
     // Given
-    String[] template = new String[] {"foo", "spam"};
+    String[] template = new String[] {"UPRN", "ADDRESS_LINE1"};
 
-    Case testCase = new Case();
-    testCase.setSample(Map.ofEntries(entry("foo", "bar"), entry("spam", "eggs")));
-
+    Case testCase = getTestCase();
     // When
     Map<String, String> personalisationValues =
         PersonalisationTemplateHelper.buildPersonalisationFromTemplate(
             template, testCase, TEST_UAC, TEST_QID, TEST_PERSONALISATION);
 
     // Then
-    assertThat(personalisationValues).containsEntry("foo", "bar").containsEntry("spam", "eggs");
-  }
-
-  @Test
-  void testBuildPersonalisationFromTemplateJustSampleSensitiveFields() {
-    // Given
-    String[] template =
-        new String[] {TEMPLATE_SENSITIVE_PREFIX + "foo", TEMPLATE_SENSITIVE_PREFIX + "spam"};
-
-    Case testCase = new Case();
-    testCase.setSampleSensitive(
-        Map.ofEntries(entry("foo", "secretBar"), entry("spam", "secretEggs")));
-
-    // When
-    Map<String, String> personalisationValues =
-        PersonalisationTemplateHelper.buildPersonalisationFromTemplate(
-            template, testCase, TEST_UAC, TEST_QID, Map.of());
-
-    // Then
     assertThat(personalisationValues)
-        .containsEntry(TEMPLATE_SENSITIVE_PREFIX + "foo", "secretBar")
-        .containsEntry(TEMPLATE_SENSITIVE_PREFIX + "spam", "secretEggs");
+        .containsEntry("UPRN", testCase.getUprn())
+        .containsEntry("ADDRESS_LINE1", testCase.getAddressLine1());
   }
 
   @Test
   void testBuildPersonalisationFromTemplateNoUacQidGiven() {
     // Given
-    String[] template = new String[] {"foo", "spam", "__request__.fooRequest"};
+    String[] template = new String[] {"UPRN", "ADDRESS_LINE1", "__request__.fooRequest"};
 
-    Case testCase = new Case();
-    testCase.setSample(Map.ofEntries(entry("foo", "bar"), entry("spam", "eggs")));
-
+    Case testCase = getTestCase();
     // When
     Map<String, String> personalisationValues =
         PersonalisationTemplateHelper.buildPersonalisationFromTemplate(
@@ -129,24 +133,22 @@ class PersonalisationTemplateHelperTest {
 
     // Then
     assertThat(personalisationValues)
-        .containsEntry("foo", "bar")
-        .containsEntry("spam", "eggs")
+        .containsEntry("UPRN", testCase.getUprn())
+        .containsEntry("ADDRESS_LINE1", testCase.getAddressLine1())
         .containsEntry("__request__.fooRequest", "barRequest");
   }
 
   @Test
   void testBuildPersonalisationFromTemplateNoPersonalisation() {
     // Given
-    String[] template = new String[] {"foo", TEMPLATE_REQUEST_PREFIX + "foo"};
+    String[] template = new String[] {"UPRN", TEMPLATE_REQUEST_PREFIX + "foo"};
 
-    Case testCase = new Case();
-    testCase.setSample(Map.ofEntries(entry("foo", "bar")));
-
+    Case testCase = getTestCase();
     // When
     Map<String, String> personalisationValues =
         PersonalisationTemplateHelper.buildPersonalisationFromTemplate(template, testCase, null);
 
     // Then
-    assertThat(personalisationValues).containsEntry("foo", "bar");
+    assertThat(personalisationValues).containsEntry("UPRN", testCase.getUprn());
   }
 }

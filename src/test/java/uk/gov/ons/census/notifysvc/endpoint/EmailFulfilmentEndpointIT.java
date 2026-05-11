@@ -36,13 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.ons.census.common.model.entity.Case;
 import uk.gov.ons.census.common.model.entity.CollectionExercise;
-import uk.gov.ons.census.common.model.entity.CollectionInstrumentSelectionRule;
 import uk.gov.ons.census.common.model.entity.EmailTemplate;
 import uk.gov.ons.census.common.model.entity.FulfilmentSurveyEmailTemplate;
 import uk.gov.ons.census.common.model.entity.Survey;
-import uk.gov.ons.census.common.validation.ColumnValidator;
-import uk.gov.ons.census.common.validation.MandatoryRule;
-import uk.gov.ons.census.common.validation.Rule;
 import uk.gov.ons.census.notifysvc.model.dto.NotifyApiSendEmailResponse;
 import uk.gov.ons.census.notifysvc.model.dto.api.EmailFulfilment;
 import uk.gov.ons.census.notifysvc.model.dto.api.RequestDTO;
@@ -123,10 +119,7 @@ class EmailFulfilmentEndpointIT {
     Survey survey = new Survey();
     survey.setId(UUID.randomUUID());
     survey.setName("TEST SURVEY");
-    survey.setSampleValidationRules(
-        new ColumnValidator[] {
-          new ColumnValidator("Junk", false, new Rule[] {new MandatoryRule()})
-        });
+
     survey.setSampleSeparator(',');
     survey.setSampleDefinitionUrl("http://junk");
     survey = surveyRepository.saveAndFlush(survey);
@@ -139,16 +132,12 @@ class EmailFulfilmentEndpointIT {
     collectionExercise.setStartDate(OffsetDateTime.now());
     collectionExercise.setEndDate(OffsetDateTime.now().plusDays(2));
     collectionExercise.setMetadata(TEST_COLLECTION_EXERCISE_UPDATE_METADATA);
-    collectionExercise.setCollectionInstrumentSelectionRules(
-        new CollectionInstrumentSelectionRule[] {
-          new CollectionInstrumentSelectionRule(0, null, "testInstrumentUrl", null)
-        });
+
     collectionExercise = collectionExerciseRepository.saveAndFlush(collectionExercise);
 
     Case testCase = new Case();
     testCase.setId(UUID.randomUUID());
     testCase.setCollectionExercise(collectionExercise);
-    testCase.setSample(Map.of());
     testCase = caseRepository.saveAndFlush(testCase);
 
     EmailTemplate emailTemplate = new EmailTemplate();

@@ -23,10 +23,10 @@ public class PersonalisationTemplateHelper {
 
     for (String templateItem : template) {
 
-      if (templateItem.equals(TEMPLATE_UAC_KEY)) {
+      if (TEMPLATE_UAC_KEY.equals(templateItem)) {
         templateValues.put(TEMPLATE_UAC_KEY, uac);
 
-      } else if (templateItem.equals(TEMPLATE_QID_KEY)) {
+      } else if (TEMPLATE_QID_KEY.equals(templateItem)) {
         templateValues.put(TEMPLATE_QID_KEY, qid);
 
       } else if (templateItem.startsWith(TEMPLATE_SENSITIVE_PREFIX)) {
@@ -56,7 +56,7 @@ public class PersonalisationTemplateHelper {
     return buildPersonalisationFromTemplate(template, caze, null, null, requestPersonalisation);
   }
 
-  public static boolean doesTemplateRequireNewUacQid(String[] template) {
+  public static boolean doesTemplateRequireNewUacQid(String... template) {
     return CollectionUtils.containsAny(
         Arrays.asList(template), List.of(TEMPLATE_UAC_KEY, TEMPLATE_QID_KEY));
   }

@@ -121,7 +121,6 @@ class EmailRequestReceiverIT {
     survey.setId(UUID.randomUUID());
     survey.setName("TEST SURVEY");
     survey.setSampleSeparator(',');
-    survey.setSampleDefinitionUrl("http://junk");
     survey = surveyRepository.saveAndFlush(survey);
 
     CollectionExercise collectionExercise = new CollectionExercise();

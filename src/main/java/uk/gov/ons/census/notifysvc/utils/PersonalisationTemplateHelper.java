@@ -2,7 +2,6 @@ package uk.gov.ons.census.notifysvc.utils;
 
 import static uk.gov.ons.census.notifysvc.utils.Constants.TEMPLATE_QID_KEY;
 import static uk.gov.ons.census.notifysvc.utils.Constants.TEMPLATE_REQUEST_PREFIX;
-import static uk.gov.ons.census.notifysvc.utils.Constants.TEMPLATE_SENSITIVE_PREFIX;
 import static uk.gov.ons.census.notifysvc.utils.Constants.TEMPLATE_UAC_KEY;
 
 import java.util.Arrays;
@@ -11,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.util.CollectionUtils;
 import uk.gov.ons.census.common.model.entity.Case;
+import uk.gov.ons.census.common.model.entity.SampleField;
 
 public class PersonalisationTemplateHelper {
   public static Map<String, String> buildPersonalisationFromTemplate(
@@ -28,13 +28,6 @@ public class PersonalisationTemplateHelper {
 
       } else if (templateItem.equals(TEMPLATE_QID_KEY)) {
         templateValues.put(TEMPLATE_QID_KEY, qid);
-
-      } else if (templateItem.startsWith(TEMPLATE_SENSITIVE_PREFIX)) {
-        templateValues.put(
-            templateItem,
-            caze.getSampleSensitive()
-                .get(templateItem.substring(TEMPLATE_SENSITIVE_PREFIX.length())));
-
       } else if (templateItem.startsWith(TEMPLATE_REQUEST_PREFIX)) {
         if (requestPersonalisation != null
             && requestPersonalisation.containsKey(
@@ -44,7 +37,8 @@ public class PersonalisationTemplateHelper {
               requestPersonalisation.get(templateItem.substring(TEMPLATE_REQUEST_PREFIX.length())));
         }
       } else {
-        templateValues.put(templateItem, caze.getSample().get(templateItem));
+        templateValues.put(
+            templateItem, caze.getSampleFieldValueAsString(SampleField.valueOf(templateItem)));
       }
     }
 

@@ -13,7 +13,8 @@
 	</parent>
 
 	<properties>
-		<maven.compiler.release>17</maven.compiler.release>
+		<java.version>21</java.version>
+		<maven.compiler.release>21</maven.compiler.release>
 		<container.cli>docker</container.cli>
 	</properties>
 
@@ -227,10 +228,11 @@
 			</extension>
 		</extensions>
 		<plugins>
+			<!-- PMD with Java 21 support -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.21.2</version>
+				<version>3.23.0</version>
 				<configuration>
 					<excludeFromFailureFile>exclude-pmd.properties</excludeFromFailureFile>
 					<failurePriority>3</failurePriority>
@@ -308,22 +310,31 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- Spotless (replacement for fmt-maven-plugin) -->
 			<plugin>
-				<groupId>com.coveo</groupId>
-				<artifactId>fmt-maven-plugin</artifactId>
-				<version>2.13</version>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>2.43.0</version>
+				<configuration>
+					<java>
+						<googleJavaFormat>
+							<version>1.22.0</version> <!-- Java 21 compatible -->
+						</googleJavaFormat>
+					</java>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
-							<goal>format</goal>
+							<goal>check</goal>
 						</goals>
+						<phase>verify</phase>
 					</execution>
 				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.7</version>
+				<version>0.8.11</version>
 				<executions>
 					<execution>
 						<goals>
@@ -363,8 +374,8 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>17</source>
-					<target>17</target>
+					<source>21</source>
+					<target>21</target>
 					<encoding>UTF-8</encoding>
 					<compilerArgs>
 						<arg>-XDcompilePolicy=simple</arg>
@@ -379,7 +390,7 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<version>1.18.20</version>
+							<version>1.18.30</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>

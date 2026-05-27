@@ -40,7 +40,7 @@ public class SmsRequestService {
     this.pubSubHelper = pubSubHelper;
   }
 
-  public Optional<UacQidCreatedPayloadDTO> fetchNewUacQidPairIfRequired(String[] smsTemplate) {
+  public Optional<UacQidCreatedPayloadDTO> fetchNewUacQidPairIfRequired(String... smsTemplate) {
     if (doesTemplateRequireNewUacQid(smsTemplate)) {
       return Optional.of(uacQidServiceClient.generateUacQid());
     }

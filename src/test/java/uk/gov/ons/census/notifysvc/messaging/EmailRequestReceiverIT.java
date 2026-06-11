@@ -170,6 +170,7 @@ class EmailRequestReceiverIT {
     emailTemplate.setNotifyTemplateId(UUID.randomUUID());
     emailTemplate.setDescription("Test description");
     emailTemplate.setNotifyServiceRef("test-service");
+    emailTemplate.setQuestionnaireType(99);
     emailTemplate = emailTemplateRepository.saveAndFlush(emailTemplate);
 
     FulfilmentSurveyEmailTemplate fulfilmentSurveyEmailTemplate =
@@ -252,6 +253,7 @@ class EmailRequestReceiverIT {
     EmailConfirmation emailConfirmation =
         emailConfirmationEvent.getPayload().getEmailConfirmation();
     assertThat(emailRequestEnriched.getQid()).isEqualTo(emailConfirmation.getQid()).isNotEmpty();
+    assertThat(emailRequestEnriched.getQid()).startsWith("99");
     assertThat(emailRequestEnriched.getUac()).isEqualTo(emailConfirmation.getUac()).isNotEmpty();
     assertThat(emailConfirmation.getUacMetadata()).isNotNull();
     assertThat(emailConfirmation.getPersonalisation()).isEqualTo(requestPersonalisation);

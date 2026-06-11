@@ -83,7 +83,7 @@ class EmailRequestServiceTest {
   void testFetchNewUacQidPairIfRequiredEmptyTemplate() {
     // When
     Optional<UacQidCreatedPayloadDTO> actualUacQidCreated =
-        emailRequestService.fetchNewUacQidPairIfRequired(new String[] {});
+        emailRequestService.fetchNewUacQidPairIfRequired(1, new String[] {});
 
     // Then
     assertThat(actualUacQidCreated).isEmpty();
@@ -96,12 +96,12 @@ class EmailRequestServiceTest {
     UacQidCreatedPayloadDTO newUacQidCreated = new UacQidCreatedPayloadDTO();
     newUacQidCreated.setUac("TEST_UAC");
     newUacQidCreated.setUac("TEST_QID");
-    when(uacQidServiceClient.generateUacQid()).thenReturn(newUacQidCreated);
+    when(uacQidServiceClient.generateUacQid(1)).thenReturn(newUacQidCreated);
 
     // When
     Optional<UacQidCreatedPayloadDTO> actualUacQidCreated =
         emailRequestService.fetchNewUacQidPairIfRequired(
-            new String[] {TEMPLATE_UAC_KEY, TEMPLATE_QID_KEY});
+            1, new String[] {TEMPLATE_UAC_KEY, TEMPLATE_QID_KEY});
 
     // Then
     assertThat(actualUacQidCreated).contains(newUacQidCreated);

@@ -142,6 +142,7 @@ class SmsFulfilmentEndpointIT {
     smsTemplate.setNotifyTemplateId(UUID.randomUUID());
     smsTemplate.setDescription("Test description");
     smsTemplate.setNotifyServiceRef("test-service");
+    smsTemplate.setQuestionnaireType(99);
     smsTemplate = smsTemplateRepository.saveAndFlush(smsTemplate);
 
     FulfilmentSurveySmsTemplate fulfilmentSurveySmsTemplate = new FulfilmentSurveySmsTemplate();
@@ -220,6 +221,7 @@ class SmsFulfilmentEndpointIT {
         .isEqualTo(smsFulfilment.getUacMetadata());
     assertThat(actualEnrichedEvent.getPayload().getSmsConfirmation().getUac()).isNotEmpty();
     assertThat(actualEnrichedEvent.getPayload().getSmsConfirmation().getQid()).isNotEmpty();
+    assertThat(actualEnrichedEvent.getPayload().getSmsConfirmation().getQid()).startsWith("99");
 
     // Check the Notify API stub was indeed called
     verify(postRequestedFor(urlEqualTo(SMS_NOTIFY_API_ENDPOINT)));

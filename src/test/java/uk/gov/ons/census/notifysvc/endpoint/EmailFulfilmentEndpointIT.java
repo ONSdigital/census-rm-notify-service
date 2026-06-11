@@ -145,6 +145,7 @@ class EmailFulfilmentEndpointIT {
     emailTemplate.setNotifyTemplateId(UUID.randomUUID());
     emailTemplate.setDescription("Test description");
     emailTemplate.setNotifyServiceRef("test-service");
+    emailTemplate.setQuestionnaireType(99);
     emailTemplate = emailTemplateRepository.saveAndFlush(emailTemplate);
 
     FulfilmentSurveyEmailTemplate fulfilmentSurveyEmailTemplate =
@@ -224,6 +225,7 @@ class EmailFulfilmentEndpointIT {
         .isEqualTo(emailFulfilment.getUacMetadata());
     assertThat(actualEnrichedEvent.getPayload().getEmailConfirmation().getUac()).isNotEmpty();
     assertThat(actualEnrichedEvent.getPayload().getEmailConfirmation().getQid()).isNotEmpty();
+    assertThat(actualEnrichedEvent.getPayload().getEmailConfirmation().getQid()).startsWith("99");
 
     // Check the Notify API stub was indeed called
     verify(postRequestedFor(urlEqualTo(EMAIL_NOTIFY_API_ENDPOINT)));

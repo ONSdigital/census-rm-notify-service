@@ -125,6 +125,7 @@ class SmsRequestEnrichedReceiverIT {
     smsTemplate.setNotifyTemplateId(UUID.randomUUID());
     smsTemplate.setDescription("Test description");
     smsTemplate.setNotifyServiceRef("test-service");
+    smsTemplate.setQuestionnaireType(99);
     smsTemplate = smsTemplateRepository.saveAndFlush(smsTemplate);
 
     FulfilmentSurveySmsTemplate fulfilmentSurveySmsTemplate = new FulfilmentSurveySmsTemplate();

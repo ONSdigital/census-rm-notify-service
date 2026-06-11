@@ -97,7 +97,8 @@ class EmailFulfilmentEndpointTest {
         .thenReturn(true);
     when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
         .thenReturn(Optional.empty());
-    when(emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate()))
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQid));
     when(notifyServiceRefMapping.getNotifyClient("test-service")).thenReturn(notificationClient);
 
@@ -162,7 +163,8 @@ class EmailFulfilmentEndpointTest {
         .thenReturn(true);
     when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
         .thenReturn(Optional.empty());
-    when(emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate()))
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQid));
     when(notifyServiceRefMapping.getNotifyClient("test-service")).thenReturn(notificationClient);
 
@@ -224,7 +226,8 @@ class EmailFulfilmentEndpointTest {
         .thenReturn(true);
     when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
         .thenReturn(Optional.empty());
-    when(emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate()))
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenReturn(Optional.empty());
     when(notifyServiceRefMapping.getNotifyClient("test-service")).thenReturn(notificationClient);
 
@@ -282,7 +285,8 @@ class EmailFulfilmentEndpointTest {
     when(emailRequestService.isEmailTemplateAllowedOnSurvey(
             emailTemplate, testCase.getCollectionExercise().getSurvey()))
         .thenReturn(true);
-    when(emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate()))
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQid));
     when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
         .thenReturn(Optional.empty());
@@ -599,6 +603,7 @@ class EmailFulfilmentEndpointTest {
     emailTemplate.setPackCode("TEST");
     emailTemplate.setTemplate(template);
     emailTemplate.setNotifyServiceRef("test-service");
+    emailTemplate.setQuestionnaireType(1);
     return emailTemplate;
   }
 

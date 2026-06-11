@@ -96,7 +96,8 @@ class SmsFulfilmentEndpointTest {
             smsTemplate, testCase.getCollectionExercise().getSurvey()))
         .thenReturn(true);
     when(smsRequestService.validatePhoneNumber(VALID_PHONE_NUMBER)).thenReturn(true);
-    when(smsRequestService.fetchNewUacQidPairIfRequired(smsTemplate.getTemplate()))
+    when(smsRequestService.fetchNewUacQidPairIfRequired(
+            smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQid));
     when(notifyServiceRefMapping.getNotifyClient("test-service")).thenReturn(notificationClient);
     when(notifyServiceRefMapping.getSenderId("test-service")).thenReturn(TEST_SENDER);
@@ -160,7 +161,8 @@ class SmsFulfilmentEndpointTest {
             smsTemplate, testCase.getCollectionExercise().getSurvey()))
         .thenReturn(true);
     when(smsRequestService.validatePhoneNumber(VALID_PHONE_NUMBER)).thenReturn(true);
-    when(smsRequestService.fetchNewUacQidPairIfRequired(smsTemplate.getTemplate()))
+    when(smsRequestService.fetchNewUacQidPairIfRequired(
+            smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQid));
     when(notifyServiceRefMapping.getNotifyClient("test-service")).thenReturn(notificationClient);
     when(notifyServiceRefMapping.getSenderId("test-service")).thenReturn(TEST_SENDER);
@@ -221,7 +223,8 @@ class SmsFulfilmentEndpointTest {
             smsTemplate, testCase.getCollectionExercise().getSurvey()))
         .thenReturn(true);
     when(smsRequestService.validatePhoneNumber(VALID_PHONE_NUMBER)).thenReturn(true);
-    when(smsRequestService.fetchNewUacQidPairIfRequired(smsTemplate.getTemplate()))
+    when(smsRequestService.fetchNewUacQidPairIfRequired(
+            smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate()))
         .thenReturn(Optional.empty());
     when(notifyServiceRefMapping.getNotifyClient("test-service")).thenReturn(notificationClient);
     when(notifyServiceRefMapping.getSenderId("test-service")).thenReturn(TEST_SENDER);
@@ -278,7 +281,8 @@ class SmsFulfilmentEndpointTest {
     when(smsRequestService.isSmsTemplateAllowedOnSurvey(
             smsTemplate, testCase.getCollectionExercise().getSurvey()))
         .thenReturn(true);
-    when(smsRequestService.fetchNewUacQidPairIfRequired(smsTemplate.getTemplate()))
+    when(smsRequestService.fetchNewUacQidPairIfRequired(
+            smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQid));
     when(smsRequestService.validatePhoneNumber(VALID_PHONE_NUMBER)).thenReturn(true);
     when(notifyServiceRefMapping.getNotifyClient("test-service")).thenReturn(notificationClient);
@@ -520,6 +524,7 @@ class SmsFulfilmentEndpointTest {
     smsTemplate.setPackCode("TEST");
     smsTemplate.setTemplate(template);
     smsTemplate.setNotifyServiceRef("test-service");
+    smsTemplate.setQuestionnaireType(1);
     return smsTemplate;
   }
 

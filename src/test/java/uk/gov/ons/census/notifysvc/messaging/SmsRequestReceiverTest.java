@@ -69,7 +69,8 @@ class SmsRequestReceiverTest {
     when(smsTemplateRepository.findById(smsTemplate.getPackCode()))
         .thenReturn(Optional.of(smsTemplate));
     when(caseRepository.existsById(testCase.getId())).thenReturn(true);
-    when(smsRequestService.fetchNewUacQidPairIfRequired(smsTemplate.getTemplate()))
+    when(smsRequestService.fetchNewUacQidPairIfRequired(
+            smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQidCreated));
     when(smsRequestService.validatePhoneNumber(VALID_PHONE_NUMBER)).thenReturn(true);
 
@@ -127,7 +128,8 @@ class SmsRequestReceiverTest {
     when(smsTemplateRepository.findById(smsTemplate.getPackCode()))
         .thenReturn(Optional.of(smsTemplate));
     when(caseRepository.existsById(testCase.getId())).thenReturn(true);
-    when(smsRequestService.fetchNewUacQidPairIfRequired(smsTemplate.getTemplate()))
+    when(smsRequestService.fetchNewUacQidPairIfRequired(
+            smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate()))
         .thenReturn(Optional.empty());
     when(smsRequestService.validatePhoneNumber(VALID_PHONE_NUMBER)).thenReturn(true);
 

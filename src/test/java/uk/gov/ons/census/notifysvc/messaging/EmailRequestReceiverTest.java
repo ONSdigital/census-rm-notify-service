@@ -72,7 +72,8 @@ class EmailRequestReceiverTest {
     when(emailTemplateRepository.findById(emailTemplate.getPackCode()))
         .thenReturn(Optional.of(emailTemplate));
     when(caseRepository.existsById(testCase.getId())).thenReturn(true);
-    when(emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate()))
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQidCreated));
     when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
         .thenReturn(Optional.empty());
@@ -136,7 +137,8 @@ class EmailRequestReceiverTest {
     when(emailTemplateRepository.findById(emailTemplate.getPackCode()))
         .thenReturn(Optional.of(emailTemplate));
     when(caseRepository.existsById(testCase.getId())).thenReturn(true);
-    when(emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate()))
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQidCreated));
     when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
         .thenReturn(Optional.empty());
@@ -195,7 +197,8 @@ class EmailRequestReceiverTest {
     when(emailTemplateRepository.findById(emailTemplate.getPackCode()))
         .thenReturn(Optional.of(emailTemplate));
     when(caseRepository.existsById(testCase.getId())).thenReturn(true);
-    when(emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate()))
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenReturn(Optional.empty());
     when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
         .thenReturn(Optional.empty());
@@ -254,7 +257,8 @@ class EmailRequestReceiverTest {
     when(emailTemplateRepository.findById(emailTemplate.getPackCode()))
         .thenReturn(Optional.of(emailTemplate));
     when(caseRepository.existsById(testCase.getId())).thenReturn(true);
-    when(emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate()))
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenReturn(Optional.empty());
     when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
         .thenReturn(Optional.empty());

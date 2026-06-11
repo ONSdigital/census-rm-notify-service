@@ -105,7 +105,8 @@ public class SmsFulfilmentEndpoint {
     }
 
     Optional<UacQidCreatedPayloadDTO> newUacQidPair =
-        smsRequestService.fetchNewUacQidPairIfRequired(smsTemplate.getTemplate());
+        smsRequestService.fetchNewUacQidPairIfRequired(
+            smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate());
 
     Map<String, String> smsPersonalisation =
         buildPersonalisationTemplateValues(

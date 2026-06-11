@@ -85,7 +85,8 @@ public class EmailRequestReceiver {
     }
 
     Optional<UacQidCreatedPayloadDTO> newUacQidPair =
-        emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate());
+        emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate());
     EventDTO emailRequestEnrichedEvent =
         buildEmailRequestEnrichedEvent(emailRequest, emailRequestHeader, newUacQidPair);
 

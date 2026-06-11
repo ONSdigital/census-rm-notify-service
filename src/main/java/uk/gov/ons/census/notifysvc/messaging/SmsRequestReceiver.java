@@ -65,7 +65,8 @@ public class SmsRequestReceiver {
     }
 
     Optional<UacQidCreatedPayloadDTO> newUacQidPair =
-        smsRequestService.fetchNewUacQidPairIfRequired(smsTemplate.getTemplate());
+        smsRequestService.fetchNewUacQidPairIfRequired(
+            smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate());
     EventDTO smsRequestEnrichedEvent =
         buildSmsRequestEnrichedEvent(smsRequest, smsRequestHeader, newUacQidPair);
 

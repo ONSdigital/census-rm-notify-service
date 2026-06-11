@@ -105,7 +105,8 @@ public class EmailFulfilmentEndpoint {
     }
 
     Optional<UacQidCreatedPayloadDTO> newUacQidPair =
-        emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate());
+        emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate());
 
     Map<String, String> emailPersonalisation =
         buildPersonalisationTemplateValues(

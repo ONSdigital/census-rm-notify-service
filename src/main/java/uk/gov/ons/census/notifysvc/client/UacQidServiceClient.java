@@ -25,21 +25,27 @@ public class UacQidServiceClient {
 
   private static final Logger log = LoggerFactory.getLogger(UacQidServiceClient.class);
 
-  public UacQidCreatedPayloadDTO generateUacQid() {
+  public UacQidCreatedPayloadDTO generateUacQid(Integer questionnaireType) {
     log.atError()
         .setMessage("HTTP call to generate a UAC and QID")
         .addKeyValue("method", "generateUacQid")
         .log();
 
     RestTemplate restTemplate = new RestTemplate();
-    UriComponents uriComponents = createUriComponents();
+    UriComponents uriComponents = createUriComponents(questionnaireType);
     ResponseEntity<UacQidCreatedPayloadDTO> responseEntity =
         restTemplate.exchange(
             uriComponents.toUri(), HttpMethod.GET, null, UacQidCreatedPayloadDTO.class);
     return responseEntity.getBody();
   }
 
-  private UriComponents createUriComponents() {
-    return UriComponentsBuilder.newInstance().scheme(scheme).host(host).port(port).build().encode();
+  private UriComponents createUriComponents(Integer questionnaireType) {
+    return UriComponentsBuilder.newInstance()
+        .scheme(scheme)
+        .host(host)
+        .port(port)
+        .queryParam("questionnaireType", questionnaireType)
+        .build()
+        .encode();
   }
 }

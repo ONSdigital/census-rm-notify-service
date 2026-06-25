@@ -43,6 +43,10 @@ public class SmsRequestService {
   public Optional<UacQidCreatedPayloadDTO> fetchNewUacQidPairIfRequired(
       Integer questionnaireType, String... smsTemplate) {
     if (doesTemplateRequireNewUacQid(smsTemplate)) {
+      if (questionnaireType == null) {
+        throw new IllegalStateException(
+            "Questionnaire type is required to generate a new UAC/QID pair");
+      }
       return Optional.of(uacQidServiceClient.generateUacQid(questionnaireType));
     }
     return Optional.empty();

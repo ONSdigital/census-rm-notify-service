@@ -103,10 +103,16 @@ public class SmsFulfilmentEndpoint {
           new SmsFulfilmentResponseError(responseStatusException.getReason()),
           responseStatusException.getStatusCode());
     }
-
-    Optional<UacQidCreatedPayloadDTO> newUacQidPair =
-        smsRequestService.fetchNewUacQidPairIfRequired(
-            smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate());
+    Optional<UacQidCreatedPayloadDTO> newUacQidPair;
+    try {
+      newUacQidPair =
+          smsRequestService.fetchNewUacQidPairIfRequired(
+              smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate());
+    } catch (IllegalStateException illegalStateException) {
+      return new ResponseEntity<>(
+          new SmsFulfilmentResponseError(illegalStateException.getMessage()),
+          HttpStatus.BAD_REQUEST);
+    }
 
     Map<String, String> smsPersonalisation =
         buildPersonalisationTemplateValues(

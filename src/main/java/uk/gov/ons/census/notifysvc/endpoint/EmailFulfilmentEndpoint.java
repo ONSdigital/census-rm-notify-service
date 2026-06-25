@@ -104,10 +104,16 @@ public class EmailFulfilmentEndpoint {
           responseStatusException.getStatusCode());
     }
 
-    Optional<UacQidCreatedPayloadDTO> newUacQidPair =
-        emailRequestService.fetchNewUacQidPairIfRequired(
-            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate());
-
+    Optional<UacQidCreatedPayloadDTO> newUacQidPair;
+    try {
+      newUacQidPair =
+          emailRequestService.fetchNewUacQidPairIfRequired(
+              emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate());
+    } catch (IllegalStateException illegalStateException) {
+      return new ResponseEntity<>(
+          new EmailFulfilmentResponseError(illegalStateException.getMessage()),
+          HttpStatus.BAD_REQUEST);
+    }
     Map<String, String> emailPersonalisation =
         buildPersonalisationTemplateValues(
             emailTemplate,

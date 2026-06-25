@@ -64,9 +64,15 @@ public class SmsRequestReceiver {
       throw new RuntimeException("Case not found with ID: " + smsRequest.getCaseId());
     }
 
-    Optional<UacQidCreatedPayloadDTO> newUacQidPair =
-        smsRequestService.fetchNewUacQidPairIfRequired(
-            smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate());
+    Optional<UacQidCreatedPayloadDTO> newUacQidPair;
+    try {
+      newUacQidPair =
+          smsRequestService.fetchNewUacQidPairIfRequired(
+              smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate());
+    } catch (IllegalStateException illegalStateException) {
+      throw new RuntimeException(
+          "Failed to generate UAC/QID pair for SMS message", illegalStateException);
+    }
     EventDTO smsRequestEnrichedEvent =
         buildSmsRequestEnrichedEvent(smsRequest, smsRequestHeader, newUacQidPair);
 

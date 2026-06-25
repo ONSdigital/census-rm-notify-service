@@ -46,6 +46,10 @@ public class EmailRequestService {
   public Optional<UacQidCreatedPayloadDTO> fetchNewUacQidPairIfRequired(
       Integer questionnaireType, String... emailTemplate) {
     if (doesTemplateRequireNewUacQid(emailTemplate)) {
+      if (questionnaireType == null) {
+        throw new IllegalStateException(
+            "Questionnaire type is required to generate a new UAC/QID pair");
+      }
       return Optional.of(uacQidServiceClient.generateUacQid(questionnaireType));
     }
     return Optional.empty();

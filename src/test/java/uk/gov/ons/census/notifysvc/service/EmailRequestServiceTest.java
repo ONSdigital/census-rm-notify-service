@@ -1,8 +1,7 @@
 package uk.gov.ons.census.notifysvc.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -105,6 +104,23 @@ class EmailRequestServiceTest {
 
     // Then
     assertThat(actualUacQidCreated).contains(newUacQidCreated);
+  }
+
+  @Test
+  void testFetchNewUacQidPairIfRequiredUacAndQidFailureNoQuestionnaireType() {
+    // Given
+
+    // When
+    Exception thrownException =
+        assertThrows(
+            IllegalStateException.class,
+            () ->
+                emailRequestService.fetchNewUacQidPairIfRequired(
+                    null, new String[] {TEMPLATE_UAC_KEY, TEMPLATE_QID_KEY}));
+
+    // Then
+    assertThat(thrownException.getMessage())
+        .isEqualTo("Questionnaire type is required to generate a new UAC/QID pair");
   }
 
   @Test

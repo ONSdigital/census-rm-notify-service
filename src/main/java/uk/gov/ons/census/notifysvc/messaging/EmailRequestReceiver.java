@@ -83,10 +83,15 @@ public class EmailRequestReceiver {
     if (!caseRepository.existsById(emailRequest.getCaseId())) {
       throw new RuntimeException("Case not found with ID: " + emailRequest.getCaseId());
     }
-
-    Optional<UacQidCreatedPayloadDTO> newUacQidPair =
-        emailRequestService.fetchNewUacQidPairIfRequired(
-            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate());
+    Optional<UacQidCreatedPayloadDTO> newUacQidPair;
+    try {
+      newUacQidPair =
+          emailRequestService.fetchNewUacQidPairIfRequired(
+              emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate());
+    } catch (IllegalStateException illegalStateException) {
+      throw new RuntimeException(
+          "Failed to generate UAC/QID pair for email request", illegalStateException);
+    }
     EventDTO emailRequestEnrichedEvent =
         buildEmailRequestEnrichedEvent(emailRequest, emailRequestHeader, newUacQidPair);
 

@@ -108,9 +108,9 @@ public class SmsFulfilmentEndpoint {
       newUacQidPair =
           smsRequestService.fetchNewUacQidPairIfRequired(
               smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate());
-    } catch (IllegalStateException illegalStateException) {
+    } catch (IllegalArgumentException illegalArgumentException) {
       return new ResponseEntity<>(
-          new SmsFulfilmentResponseError(illegalStateException.getMessage()),
+          new SmsFulfilmentResponseError(illegalArgumentException.getMessage()),
           HttpStatus.BAD_REQUEST);
     }
 

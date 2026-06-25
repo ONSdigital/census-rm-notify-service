@@ -132,7 +132,7 @@ class SmsRequestReceiverTest {
     when(smsRequestService.fetchNewUacQidPairIfRequired(
             smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate()))
         .thenThrow(
-            new IllegalStateException(
+            new IllegalArgumentException(
                 "Questionnaire type is required to generate a new UAC/QID pair"));
     when(smsRequestService.validatePhoneNumber(VALID_PHONE_NUMBER)).thenReturn(true);
 

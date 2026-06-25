@@ -88,9 +88,9 @@ public class EmailRequestReceiver {
       newUacQidPair =
           emailRequestService.fetchNewUacQidPairIfRequired(
               emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate());
-    } catch (IllegalStateException illegalStateException) {
+    } catch (IllegalArgumentException illegalArgumentException) {
       throw new RuntimeException(
-          "Failed to generate UAC/QID pair for email request", illegalStateException);
+          "Failed to generate UAC/QID pair for email request", illegalArgumentException);
     }
     EventDTO emailRequestEnrichedEvent =
         buildEmailRequestEnrichedEvent(emailRequest, emailRequestHeader, newUacQidPair);

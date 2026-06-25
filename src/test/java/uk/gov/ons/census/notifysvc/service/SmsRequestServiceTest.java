@@ -121,7 +121,7 @@ class SmsRequestServiceTest {
     // When
     Exception thrownException =
         assertThrows(
-            IllegalStateException.class,
+            IllegalArgumentException.class,
             () ->
                 smsRequestService.fetchNewUacQidPairIfRequired(
                     null, new String[] {TEMPLATE_UAC_KEY, TEMPLATE_QID_KEY}));

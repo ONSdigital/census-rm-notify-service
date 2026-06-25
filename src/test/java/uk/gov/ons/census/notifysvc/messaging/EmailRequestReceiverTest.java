@@ -358,7 +358,7 @@ class EmailRequestReceiverTest {
     when(emailRequestService.fetchNewUacQidPairIfRequired(
             emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenThrow(
-            new IllegalStateException(
+            new IllegalArgumentException(
                 "Questionnaire type is required to generate a new UAC/QID pair"));
 
     EventDTO emailRequestEvent = buildEventDTO(emailRequestEnrichedTopic);

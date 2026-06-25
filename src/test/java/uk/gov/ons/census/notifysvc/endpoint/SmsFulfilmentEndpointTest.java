@@ -506,7 +506,7 @@ class SmsFulfilmentEndpointTest {
     when(smsRequestService.fetchNewUacQidPairIfRequired(
             smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate()))
         .thenThrow(
-            new IllegalStateException(
+            new IllegalArgumentException(
                 "Questionnaire type is required to generate a new UAC/QID pair"));
 
     RequestDTO smsFulfilmentRequest =

@@ -44,7 +44,7 @@ public class SmsRequestService {
       Integer questionnaireType, String... smsTemplate) {
     if (doesTemplateRequireNewUacQid(smsTemplate)) {
       if (questionnaireType == null) {
-        throw new IllegalStateException(
+        throw new IllegalArgumentException(
             "Questionnaire type is required to generate a new UAC/QID pair");
       }
       return Optional.of(uacQidServiceClient.generateUacQid(questionnaireType));

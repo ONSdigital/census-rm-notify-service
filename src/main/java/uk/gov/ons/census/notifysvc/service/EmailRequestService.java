@@ -47,7 +47,7 @@ public class EmailRequestService {
       Integer questionnaireType, String... emailTemplate) {
     if (doesTemplateRequireNewUacQid(emailTemplate)) {
       if (questionnaireType == null) {
-        throw new IllegalStateException(
+        throw new IllegalArgumentException(
             "Questionnaire type is required to generate a new UAC/QID pair");
       }
       return Optional.of(uacQidServiceClient.generateUacQid(questionnaireType));

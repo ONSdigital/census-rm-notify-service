@@ -109,9 +109,9 @@ public class EmailFulfilmentEndpoint {
       newUacQidPair =
           emailRequestService.fetchNewUacQidPairIfRequired(
               emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate());
-    } catch (IllegalStateException illegalStateException) {
+    } catch (IllegalArgumentException illegalArgumentException) {
       return new ResponseEntity<>(
-          new EmailFulfilmentResponseError(illegalStateException.getMessage()),
+          new EmailFulfilmentResponseError(illegalArgumentException.getMessage()),
           HttpStatus.BAD_REQUEST);
     }
     Map<String, String> emailPersonalisation =

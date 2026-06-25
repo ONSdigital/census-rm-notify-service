@@ -113,7 +113,7 @@ class EmailRequestServiceTest {
     // When
     Exception thrownException =
         assertThrows(
-            IllegalStateException.class,
+            IllegalArgumentException.class,
             () ->
                 emailRequestService.fetchNewUacQidPairIfRequired(
                     null, new String[] {TEMPLATE_UAC_KEY, TEMPLATE_QID_KEY}));

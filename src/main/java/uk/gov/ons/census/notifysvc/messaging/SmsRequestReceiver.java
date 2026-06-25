@@ -69,9 +69,9 @@ public class SmsRequestReceiver {
       newUacQidPair =
           smsRequestService.fetchNewUacQidPairIfRequired(
               smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate());
-    } catch (IllegalStateException illegalStateException) {
+    } catch (IllegalArgumentException illegalArgumentException) {
       throw new RuntimeException(
-          "Failed to generate UAC/QID pair for SMS message", illegalStateException);
+          "Failed to generate UAC/QID pair for SMS message", illegalArgumentException);
     }
     EventDTO smsRequestEnrichedEvent =
         buildSmsRequestEnrichedEvent(smsRequest, smsRequestHeader, newUacQidPair);

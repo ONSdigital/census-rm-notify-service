@@ -586,26 +586,22 @@ class EmailFulfilmentEndpointTest {
         .thenReturn(true);
     when(emailRequestService.fetchNewUacQidPairIfRequired(
             emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
-        .thenThrow(
-            new IllegalArgumentException(
-                "Questionnaire type is required to generate a new UAC/QID pair"));
+        .thenThrow(new IllegalArgumentException("Email template is missing questionnaire type"));
 
     RequestDTO emailFulfilmentRequest =
         buildEmailFulfilmentRequest(
             testCase.getId(), emailTemplate.getPackCode(), VALID_EMAIL_ADDRESS);
 
     // When we call with the email fulfilment and the notify client errors, we get an internal
-    // server
-    // error
+    // server error
     mockMvc
         .perform(
             post(EMAIL_FULFILMENT_ENDPOINT)
                 .content(objectMapper.writeValueAsBytes(emailFulfilmentRequest))
                 .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest())
+        .andExpect(status().isInternalServerError())
         .andExpect(handler().handlerType(EmailFulfilmentEndpoint.class))
-        .andExpect(
-            jsonPath("error", is("Questionnaire type is required to generate a new UAC/QID pair")));
+        .andExpect(jsonPath("error", is("Email template is missing questionnaire type")));
     // Then
     verifyNoInteractions(notificationClient);
   }

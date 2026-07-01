@@ -357,9 +357,7 @@ class EmailRequestReceiverTest {
         .thenReturn(Optional.empty());
     when(emailRequestService.fetchNewUacQidPairIfRequired(
             emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
-        .thenThrow(
-            new IllegalArgumentException(
-                "Questionnaire type is required to generate a new UAC/QID pair"));
+        .thenThrow(new IllegalArgumentException("Email template is missing questionnaire type"));
 
     EventDTO emailRequestEvent = buildEventDTO(emailRequestEnrichedTopic);
     EmailRequest emailRequest = new EmailRequest();
@@ -376,7 +374,8 @@ class EmailRequestReceiverTest {
             RuntimeException.class, () -> emailRequestReceiver.receiveMessage(eventMessage));
 
     assertThat(thrown.getMessage())
-        .containsIgnoringCase("Failed to generate UAC/QID pair for email request");
+        .containsIgnoringCase(
+            "Failed to fetch UAC/QID pair for email request event for pack code: TEST_PACK_CODE");
     verifyNoInteractions(pubSubHelper);
   }
 

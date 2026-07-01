@@ -120,7 +120,7 @@ class EmailRequestServiceTest {
 
     // Then
     assertThat(thrownException.getMessage())
-        .isEqualTo("Questionnaire type is required to generate a new UAC/QID pair");
+        .isEqualTo("Email template is missing questionnaire type");
   }
 
   @Test

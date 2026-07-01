@@ -128,7 +128,7 @@ class SmsRequestServiceTest {
 
     // Then
     assertThat(thrownException.getMessage())
-        .isEqualTo("Questionnaire type is required to generate a new UAC/QID pair");
+        .isEqualTo("SMS template is missing questionnaire type");
   }
 
   @Test

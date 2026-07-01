@@ -131,9 +131,7 @@ class SmsRequestReceiverTest {
     when(caseRepository.existsById(testCase.getId())).thenReturn(true);
     when(smsRequestService.fetchNewUacQidPairIfRequired(
             smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate()))
-        .thenThrow(
-            new IllegalArgumentException(
-                "Questionnaire type is required to generate a new UAC/QID pair"));
+        .thenThrow(new IllegalArgumentException("SMS template is missing questionnaire type"));
     when(smsRequestService.validatePhoneNumber(VALID_PHONE_NUMBER)).thenReturn(true);
 
     EventDTO smsRequestEvent = buildEventDTO(smsRequestEnrichedTopic);
@@ -150,7 +148,9 @@ class SmsRequestReceiverTest {
     Exception thrown =
         assertThrows(RuntimeException.class, () -> smsRequestReceiver.receiveMessage(eventMessage));
     // Then
-    assertThat(thrown.getMessage()).isEqualTo("Failed to generate UAC/QID pair for SMS message");
+    assertThat(thrown.getMessage())
+        .isEqualTo(
+            "Failed to fetch UAC/QID pair for SMS request event for pack code: TEST_PACK_CODE");
     verifyNoInteractions(pubSubHelper);
   }
 

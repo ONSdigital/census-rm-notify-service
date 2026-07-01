@@ -109,9 +109,15 @@ public class SmsFulfilmentEndpoint {
           smsRequestService.fetchNewUacQidPairIfRequired(
               smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate());
     } catch (IllegalArgumentException illegalArgumentException) {
+      log.atError()
+          .setMessage("Failed to fetch UAC QID pair for SMS API request ")
+          .addKeyValue("correlationId", request.getHeader().getCorrelationId())
+          .addKeyValue("caseId", caze.getId())
+          .addKeyValue("packCode", smsTemplate.getPackCode())
+          .log();
       return new ResponseEntity<>(
           new SmsFulfilmentResponseError(illegalArgumentException.getMessage()),
-          HttpStatus.BAD_REQUEST);
+          HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     Map<String, String> smsPersonalisation =

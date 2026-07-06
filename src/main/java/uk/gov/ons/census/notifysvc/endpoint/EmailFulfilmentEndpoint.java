@@ -104,9 +104,22 @@ public class EmailFulfilmentEndpoint {
           responseStatusException.getStatusCode());
     }
 
-    Optional<UacQidCreatedPayloadDTO> newUacQidPair =
-        emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate());
-
+    Optional<UacQidCreatedPayloadDTO> newUacQidPair;
+    try {
+      newUacQidPair =
+          emailRequestService.fetchNewUacQidPairIfRequired(
+              emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate());
+    } catch (IllegalArgumentException illegalArgumentException) {
+      log.atError()
+          .setMessage("Failed to fetch UAC QID pair for email API request ")
+          .addKeyValue("correlationId", request.getHeader().getCorrelationId())
+          .addKeyValue("caseId", caze.getId())
+          .addKeyValue("packCode", emailTemplate.getPackCode())
+          .log();
+      return new ResponseEntity<>(
+          new EmailFulfilmentResponseError(illegalArgumentException.getMessage()),
+          HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     Map<String, String> emailPersonalisation =
         buildPersonalisationTemplateValues(
             emailTemplate,

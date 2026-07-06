@@ -140,6 +140,7 @@ class SmsRequestReceiverIT {
     smsTemplate.setNotifyTemplateId(UUID.randomUUID());
     smsTemplate.setDescription("Test description");
     smsTemplate.setNotifyServiceRef("test-service");
+    smsTemplate.setQuestionnaireType(99);
     smsTemplate = smsTemplateRepository.saveAndFlush(smsTemplate);
 
     FulfilmentSurveySmsTemplate fulfilmentSurveySmsTemplate = new FulfilmentSurveySmsTemplate();
@@ -220,6 +221,7 @@ class SmsRequestReceiverIT {
         smsRequestEnrichedEvent.getPayload().getSmsRequestEnriched();
     SmsConfirmation smsConfirmation = smsConfirmationEvent.getPayload().getSmsConfirmation();
     assertThat(smsRequestEnriched.getQid()).isEqualTo(smsConfirmation.getQid()).isNotEmpty();
+    assertThat(smsRequestEnriched.getQid()).startsWith("99");
     assertThat(smsRequestEnriched.getUac()).isEqualTo(smsConfirmation.getUac()).isNotEmpty();
     assertThat(smsRequestEnriched.getPersonalisation())
         .isEqualTo(smsConfirmation.getPersonalisation())

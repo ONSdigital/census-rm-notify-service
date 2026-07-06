@@ -33,10 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.server.ResponseStatusException;
-import uk.gov.ons.census.common.model.entity.Case;
-import uk.gov.ons.census.common.model.entity.CollectionExercise;
-import uk.gov.ons.census.common.model.entity.SmsTemplate;
-import uk.gov.ons.census.common.model.entity.Survey;
+import uk.gov.ons.census.common.model.entity.*;
 import uk.gov.ons.census.notifysvc.config.NotifyServiceRefMapping;
 import uk.gov.ons.census.notifysvc.model.dto.api.RequestDTO;
 import uk.gov.ons.census.notifysvc.model.dto.api.RequestHeaderDTO;
@@ -96,7 +93,8 @@ class SmsFulfilmentEndpointTest {
             smsTemplate, testCase.getCollectionExercise().getSurvey()))
         .thenReturn(true);
     when(smsRequestService.validatePhoneNumber(VALID_PHONE_NUMBER)).thenReturn(true);
-    when(smsRequestService.fetchNewUacQidPairIfRequired(smsTemplate.getTemplate()))
+    when(smsRequestService.fetchNewUacQidPairIfRequired(
+            smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQid));
     when(notifyServiceRefMapping.getNotifyClient("test-service")).thenReturn(notificationClient);
     when(notifyServiceRefMapping.getSenderId("test-service")).thenReturn(TEST_SENDER);
@@ -160,7 +158,8 @@ class SmsFulfilmentEndpointTest {
             smsTemplate, testCase.getCollectionExercise().getSurvey()))
         .thenReturn(true);
     when(smsRequestService.validatePhoneNumber(VALID_PHONE_NUMBER)).thenReturn(true);
-    when(smsRequestService.fetchNewUacQidPairIfRequired(smsTemplate.getTemplate()))
+    when(smsRequestService.fetchNewUacQidPairIfRequired(
+            smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQid));
     when(notifyServiceRefMapping.getNotifyClient("test-service")).thenReturn(notificationClient);
     when(notifyServiceRefMapping.getSenderId("test-service")).thenReturn(TEST_SENDER);
@@ -221,7 +220,8 @@ class SmsFulfilmentEndpointTest {
             smsTemplate, testCase.getCollectionExercise().getSurvey()))
         .thenReturn(true);
     when(smsRequestService.validatePhoneNumber(VALID_PHONE_NUMBER)).thenReturn(true);
-    when(smsRequestService.fetchNewUacQidPairIfRequired(smsTemplate.getTemplate()))
+    when(smsRequestService.fetchNewUacQidPairIfRequired(
+            smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate()))
         .thenReturn(Optional.empty());
     when(notifyServiceRefMapping.getNotifyClient("test-service")).thenReturn(notificationClient);
     when(notifyServiceRefMapping.getSenderId("test-service")).thenReturn(TEST_SENDER);
@@ -278,7 +278,8 @@ class SmsFulfilmentEndpointTest {
     when(smsRequestService.isSmsTemplateAllowedOnSurvey(
             smsTemplate, testCase.getCollectionExercise().getSurvey()))
         .thenReturn(true);
-    when(smsRequestService.fetchNewUacQidPairIfRequired(smsTemplate.getTemplate()))
+    when(smsRequestService.fetchNewUacQidPairIfRequired(
+            smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQid));
     when(smsRequestService.validatePhoneNumber(VALID_PHONE_NUMBER)).thenReturn(true);
     when(notifyServiceRefMapping.getNotifyClient("test-service")).thenReturn(notificationClient);
@@ -488,6 +489,39 @@ class SmsFulfilmentEndpointTest {
             "400 BAD_REQUEST \"Invalid request header: correlationId, channel and source are mandatory\"");
   }
 
+  @Test
+  void testSmsFulfilmentTemplateErrorWithNoQidType() throws Exception {
+    // Given
+    Case testCase = getTestCase();
+    SmsTemplate smsTemplate =
+        getTestSmsTemplate(new String[] {TEMPLATE_UAC_KEY, TEMPLATE_QID_KEY}, null);
+
+    when(caseRepository.findById(testCase.getId())).thenReturn(Optional.of(testCase));
+    when(smsTemplateRepository.findById(smsTemplate.getPackCode()))
+        .thenReturn(Optional.of(smsTemplate));
+    when(smsRequestService.validatePhoneNumber(VALID_PHONE_NUMBER)).thenReturn(true);
+    when(smsRequestService.isSmsTemplateAllowedOnSurvey(
+            smsTemplate, testCase.getCollectionExercise().getSurvey()))
+        .thenReturn(true);
+    when(smsRequestService.fetchNewUacQidPairIfRequired(
+            smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate()))
+        .thenThrow(new IllegalArgumentException("Email template is missing questionnaire type"));
+
+    RequestDTO smsFulfilmentRequest =
+        buildSmsFulfilmentRequest(testCase.getId(), smsTemplate.getPackCode(), VALID_PHONE_NUMBER);
+
+    mockMvc
+        .perform(
+            post(SMS_FULFILMENT_ENDPOINT)
+                .content(objectMapper.writeValueAsBytes(smsFulfilmentRequest))
+                .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isInternalServerError())
+        .andExpect(handler().handlerType(SmsFulfilmentEndpoint.class))
+        .andExpect(jsonPath("error", is("Email template is missing questionnaire type")));
+    // Then
+    verifyNoInteractions(notificationClient);
+  }
+
   private RequestDTO buildSmsFulfilmentRequest(UUID caseId, String packCode, String phoneNumber) {
     RequestDTO smsFulfilmentEvent = new RequestDTO();
     RequestHeaderDTO header = new RequestHeaderDTO();
@@ -515,11 +549,16 @@ class SmsFulfilmentEndpointTest {
   }
 
   private SmsTemplate getTestSmsTemplate(String[] template) {
+    return getTestSmsTemplate(template, 1);
+  }
+
+  private SmsTemplate getTestSmsTemplate(String[] template, Integer questionnaireType) {
     SmsTemplate smsTemplate = new SmsTemplate();
     smsTemplate.setNotifyTemplateId(UUID.randomUUID());
     smsTemplate.setPackCode("TEST");
     smsTemplate.setTemplate(template);
     smsTemplate.setNotifyServiceRef("test-service");
+    smsTemplate.setQuestionnaireType(questionnaireType);
     return smsTemplate;
   }
 

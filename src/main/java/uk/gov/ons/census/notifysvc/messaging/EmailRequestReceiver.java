@@ -83,9 +83,25 @@ public class EmailRequestReceiver {
     if (!caseRepository.existsById(emailRequest.getCaseId())) {
       throw new RuntimeException("Case not found with ID: " + emailRequest.getCaseId());
     }
-
-    Optional<UacQidCreatedPayloadDTO> newUacQidPair =
-        emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate());
+    Optional<UacQidCreatedPayloadDTO> newUacQidPair;
+    try {
+      newUacQidPair =
+          emailRequestService.fetchNewUacQidPairIfRequired(
+              emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate());
+    } catch (IllegalArgumentException illegalArgumentException) {
+      log.atError()
+          .setMessage("Failed to fetch UAC QID pair for email request event")
+          .addKeyValue("messageId", emailRequestHeader.getMessageId())
+          .addKeyValue("correlationId", emailRequestHeader.getCorrelationId())
+          .addKeyValue("caseId", emailRequest.getCaseId())
+          .addKeyValue("packCode", emailRequest.getPackCode())
+          .log();
+      throw new RuntimeException(
+          String.format(
+              "Failed to fetch UAC/QID pair for email request event for pack code: %s",
+              emailTemplate.getPackCode()),
+          illegalArgumentException);
+    }
     EventDTO emailRequestEnrichedEvent =
         buildEmailRequestEnrichedEvent(emailRequest, emailRequestHeader, newUacQidPair);
 

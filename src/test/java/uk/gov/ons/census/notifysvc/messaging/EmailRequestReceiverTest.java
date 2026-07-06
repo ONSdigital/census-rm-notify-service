@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import uk.gov.ons.census.common.model.entity.Case;
 import uk.gov.ons.census.common.model.entity.EmailTemplate;
-import uk.gov.ons.census.common.model.entity.SmsTemplate;
 import uk.gov.ons.census.notifysvc.model.dto.api.UacQidCreatedPayloadDTO;
 import uk.gov.ons.census.notifysvc.model.dto.event.EmailRequest;
 import uk.gov.ons.census.notifysvc.model.dto.event.EmailRequestEnriched;
@@ -72,7 +71,8 @@ class EmailRequestReceiverTest {
     when(emailTemplateRepository.findById(emailTemplate.getPackCode()))
         .thenReturn(Optional.of(emailTemplate));
     when(caseRepository.existsById(testCase.getId())).thenReturn(true);
-    when(emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate()))
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQidCreated));
     when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
         .thenReturn(Optional.empty());
@@ -136,7 +136,8 @@ class EmailRequestReceiverTest {
     when(emailTemplateRepository.findById(emailTemplate.getPackCode()))
         .thenReturn(Optional.of(emailTemplate));
     when(caseRepository.existsById(testCase.getId())).thenReturn(true);
-    when(emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate()))
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQidCreated));
     when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
         .thenReturn(Optional.empty());
@@ -195,7 +196,8 @@ class EmailRequestReceiverTest {
     when(emailTemplateRepository.findById(emailTemplate.getPackCode()))
         .thenReturn(Optional.of(emailTemplate));
     when(caseRepository.existsById(testCase.getId())).thenReturn(true);
-    when(emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate()))
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenReturn(Optional.empty());
     when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
         .thenReturn(Optional.empty());
@@ -254,7 +256,8 @@ class EmailRequestReceiverTest {
     when(emailTemplateRepository.findById(emailTemplate.getPackCode()))
         .thenReturn(Optional.of(emailTemplate));
     when(caseRepository.existsById(testCase.getId())).thenReturn(true);
-    when(emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate()))
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenReturn(Optional.empty());
     when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
         .thenReturn(Optional.empty());
@@ -307,9 +310,9 @@ class EmailRequestReceiverTest {
     Case testCase = new Case();
     testCase.setId(UUID.randomUUID());
 
-    SmsTemplate smsTemplate = new SmsTemplate();
-    smsTemplate.setPackCode("TEST_PACK_CODE");
-    smsTemplate.setTemplate(new String[] {TEMPLATE_QID_KEY, TEMPLATE_UAC_KEY});
+    EmailTemplate emailTemplate = new EmailTemplate();
+    emailTemplate.setPackCode("TEST_PACK_CODE");
+    emailTemplate.setTemplate(new String[] {TEMPLATE_QID_KEY, TEMPLATE_UAC_KEY});
 
     String invalidEmailAddress = "blah";
 
@@ -333,6 +336,46 @@ class EmailRequestReceiverTest {
     assertThat(thrown.getMessage()).containsIgnoringCase("invalid email address");
     verifyNoInteractions(caseRepository);
     verifyNoInteractions(emailTemplateRepository);
+    verifyNoInteractions(pubSubHelper);
+  }
+
+  @Test
+  void testReceiveMessageExceptionOnNoQidTypeForUacQidTemplate() {
+    // Given
+    Case testCase = new Case();
+    testCase.setId(UUID.randomUUID());
+
+    EmailTemplate emailTemplate = new EmailTemplate();
+    emailTemplate.setPackCode("TEST_PACK_CODE");
+    emailTemplate.setTemplate(new String[] {TEMPLATE_QID_KEY, TEMPLATE_UAC_KEY});
+    emailTemplate.setQuestionnaireType(null);
+
+    when(emailTemplateRepository.findById(emailTemplate.getPackCode()))
+        .thenReturn(Optional.of(emailTemplate));
+    when(caseRepository.existsById(testCase.getId())).thenReturn(true);
+    when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
+        .thenReturn(Optional.empty());
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
+        .thenThrow(new IllegalArgumentException("Email template is missing questionnaire type"));
+
+    EventDTO emailRequestEvent = buildEventDTO(emailRequestEnrichedTopic);
+    EmailRequest emailRequest = new EmailRequest();
+    emailRequest.setCaseId(testCase.getId());
+    emailRequest.setPackCode(TEST_PACK_CODE);
+    emailRequest.setEmail("example@example.com");
+    emailRequestEvent.getPayload().setEmailRequest(emailRequest);
+
+    Message<byte[]> eventMessage = constructMessageWithValidTimeStamp(emailRequestEvent);
+
+    // When, then throws
+    Exception thrown =
+        assertThrows(
+            RuntimeException.class, () -> emailRequestReceiver.receiveMessage(eventMessage));
+
+    assertThat(thrown.getMessage())
+        .containsIgnoringCase(
+            "Failed to fetch UAC/QID pair for email request event for pack code: TEST_PACK_CODE");
     verifyNoInteractions(pubSubHelper);
   }
 

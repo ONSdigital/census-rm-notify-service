@@ -1,8 +1,6 @@
 package uk.gov.ons.census.notifysvc.utils;
 
-import static uk.gov.ons.census.notifysvc.utils.Constants.TEMPLATE_QID_KEY;
-import static uk.gov.ons.census.notifysvc.utils.Constants.TEMPLATE_REQUEST_PREFIX;
-import static uk.gov.ons.census.notifysvc.utils.Constants.TEMPLATE_UAC_KEY;
+import static uk.gov.ons.census.notifysvc.utils.Constants.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,6 +26,8 @@ public class PersonalisationTemplateHelper {
 
       } else if (TEMPLATE_QID_KEY.equals(templateItem)) {
         templateValues.put(TEMPLATE_QID_KEY, qid);
+      } else if (TEMPLATE_CASEREF_KEY.equals(templateItem)) {
+        templateValues.put(TEMPLATE_CASEREF_KEY, String.valueOf(caze.getCaseRef()));
       } else if (templateItem.startsWith(TEMPLATE_REQUEST_PREFIX)) {
         if (requestPersonalisation != null
             && requestPersonalisation.containsKey(

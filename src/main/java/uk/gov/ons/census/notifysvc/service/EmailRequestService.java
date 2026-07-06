@@ -43,9 +43,13 @@ public class EmailRequestService {
     this.pubSubHelper = pubSubHelper;
   }
 
-  public Optional<UacQidCreatedPayloadDTO> fetchNewUacQidPairIfRequired(String... emailTemplate) {
+  public Optional<UacQidCreatedPayloadDTO> fetchNewUacQidPairIfRequired(
+      Integer questionnaireType, String... emailTemplate) {
     if (doesTemplateRequireNewUacQid(emailTemplate)) {
-      return Optional.of(uacQidServiceClient.generateUacQid());
+      if (questionnaireType == null) {
+        throw new IllegalArgumentException("Email template is missing questionnaire type");
+      }
+      return Optional.of(uacQidServiceClient.generateUacQid(questionnaireType));
     }
     return Optional.empty();
   }

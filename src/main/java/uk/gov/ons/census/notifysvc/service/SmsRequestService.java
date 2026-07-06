@@ -40,9 +40,13 @@ public class SmsRequestService {
     this.pubSubHelper = pubSubHelper;
   }
 
-  public Optional<UacQidCreatedPayloadDTO> fetchNewUacQidPairIfRequired(String... smsTemplate) {
+  public Optional<UacQidCreatedPayloadDTO> fetchNewUacQidPairIfRequired(
+      Integer questionnaireType, String... smsTemplate) {
     if (doesTemplateRequireNewUacQid(smsTemplate)) {
-      return Optional.of(uacQidServiceClient.generateUacQid());
+      if (questionnaireType == null) {
+        throw new IllegalArgumentException("SMS template is missing questionnaire type");
+      }
+      return Optional.of(uacQidServiceClient.generateUacQid(questionnaireType));
     }
     return Optional.empty();
   }

@@ -97,7 +97,8 @@ class EmailFulfilmentEndpointTest {
         .thenReturn(true);
     when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
         .thenReturn(Optional.empty());
-    when(emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate()))
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQid));
     when(notifyServiceRefMapping.getNotifyClient("test-service")).thenReturn(notificationClient);
 
@@ -162,7 +163,8 @@ class EmailFulfilmentEndpointTest {
         .thenReturn(true);
     when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
         .thenReturn(Optional.empty());
-    when(emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate()))
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQid));
     when(notifyServiceRefMapping.getNotifyClient("test-service")).thenReturn(notificationClient);
 
@@ -224,7 +226,8 @@ class EmailFulfilmentEndpointTest {
         .thenReturn(true);
     when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
         .thenReturn(Optional.empty());
-    when(emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate()))
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenReturn(Optional.empty());
     when(notifyServiceRefMapping.getNotifyClient("test-service")).thenReturn(notificationClient);
 
@@ -282,7 +285,8 @@ class EmailFulfilmentEndpointTest {
     when(emailRequestService.isEmailTemplateAllowedOnSurvey(
             emailTemplate, testCase.getCollectionExercise().getSurvey()))
         .thenReturn(true);
-    when(emailRequestService.fetchNewUacQidPairIfRequired(emailTemplate.getTemplate()))
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
         .thenReturn(Optional.of(newUacQid));
     when(emailRequestService.validateEmailAddress(VALID_EMAIL_ADDRESS))
         .thenReturn(Optional.empty());
@@ -566,6 +570,42 @@ class EmailFulfilmentEndpointTest {
             "400 BAD_REQUEST \"Invalid request header: correlationId, channel and source are mandatory\"");
   }
 
+  @Test
+  void testEmailFulfilmentTemplateErrorWithNoQidType() throws Exception {
+    // Given
+    Case testCase = getTestCase();
+    EmailTemplate emailTemplate =
+        getTestEmailTemplate(new String[] {TEMPLATE_UAC_KEY, TEMPLATE_QID_KEY}, null);
+
+    UacQidCreatedPayloadDTO newUacQid = getUacQidCreated();
+    when(caseRepository.findById(testCase.getId())).thenReturn(Optional.of(testCase));
+    when(emailTemplateRepository.findById(emailTemplate.getPackCode()))
+        .thenReturn(Optional.of(emailTemplate));
+    when(emailRequestService.isEmailTemplateAllowedOnSurvey(
+            emailTemplate, testCase.getCollectionExercise().getSurvey()))
+        .thenReturn(true);
+    when(emailRequestService.fetchNewUacQidPairIfRequired(
+            emailTemplate.getQuestionnaireType(), emailTemplate.getTemplate()))
+        .thenThrow(new IllegalArgumentException("Email template is missing questionnaire type"));
+
+    RequestDTO emailFulfilmentRequest =
+        buildEmailFulfilmentRequest(
+            testCase.getId(), emailTemplate.getPackCode(), VALID_EMAIL_ADDRESS);
+
+    // When we call with the email fulfilment and the notify client errors, we get an internal
+    // server error
+    mockMvc
+        .perform(
+            post(EMAIL_FULFILMENT_ENDPOINT)
+                .content(objectMapper.writeValueAsBytes(emailFulfilmentRequest))
+                .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isInternalServerError())
+        .andExpect(handler().handlerType(EmailFulfilmentEndpoint.class))
+        .andExpect(jsonPath("error", is("Email template is missing questionnaire type")));
+    // Then
+    verifyNoInteractions(notificationClient);
+  }
+
   private RequestDTO buildEmailFulfilmentRequest(
       UUID caseId, String packCode, String emailAddress) {
     RequestDTO emailFulfilmentEvent = new RequestDTO();
@@ -594,11 +634,16 @@ class EmailFulfilmentEndpointTest {
   }
 
   private EmailTemplate getTestEmailTemplate(String[] template) {
+    return getTestEmailTemplate(template, 1);
+  }
+
+  private EmailTemplate getTestEmailTemplate(String[] template, Integer questionnaireType) {
     EmailTemplate emailTemplate = new EmailTemplate();
     emailTemplate.setNotifyTemplateId(UUID.randomUUID());
     emailTemplate.setPackCode("TEST");
     emailTemplate.setTemplate(template);
     emailTemplate.setNotifyServiceRef("test-service");
+    emailTemplate.setQuestionnaireType(questionnaireType);
     return emailTemplate;
   }
 

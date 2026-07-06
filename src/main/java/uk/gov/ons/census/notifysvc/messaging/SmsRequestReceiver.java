@@ -5,6 +5,8 @@ import static uk.gov.ons.census.notifysvc.utils.JsonHelper.convertJsonBytesToEve
 import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -44,6 +46,8 @@ public class SmsRequestReceiver {
     this.pubSubHelper = pubSubHelper;
   }
 
+  private static final Logger log = LoggerFactory.getLogger(SmsRequestReceiver.class);
+
   @ServiceActivator(inputChannel = "smsRequestInputChannel", adviceChain = "retryAdvice")
   public void receiveMessage(Message<byte[]> message) {
     EventDTO smsRequestEvent = convertJsonBytesToEvent(message.getPayload());
@@ -64,8 +68,25 @@ public class SmsRequestReceiver {
       throw new RuntimeException("Case not found with ID: " + smsRequest.getCaseId());
     }
 
-    Optional<UacQidCreatedPayloadDTO> newUacQidPair =
-        smsRequestService.fetchNewUacQidPairIfRequired(smsTemplate.getTemplate());
+    Optional<UacQidCreatedPayloadDTO> newUacQidPair;
+    try {
+      newUacQidPair =
+          smsRequestService.fetchNewUacQidPairIfRequired(
+              smsTemplate.getQuestionnaireType(), smsTemplate.getTemplate());
+    } catch (IllegalArgumentException illegalArgumentException) {
+      log.atError()
+          .setMessage("Failed to fetch UAC QID pair for SMS request event")
+          .addKeyValue("messageId", smsRequestHeader.getMessageId())
+          .addKeyValue("correlationId", smsRequestHeader.getCorrelationId())
+          .addKeyValue("caseId", smsRequest.getCaseId())
+          .addKeyValue("packCode", smsTemplate.getPackCode())
+          .log();
+      throw new RuntimeException(
+          String.format(
+              "Failed to fetch UAC/QID pair for SMS request event for pack code: %s",
+              smsTemplate.getPackCode()),
+          illegalArgumentException);
+    }
     EventDTO smsRequestEnrichedEvent =
         buildSmsRequestEnrichedEvent(smsRequest, smsRequestHeader, newUacQidPair);
 

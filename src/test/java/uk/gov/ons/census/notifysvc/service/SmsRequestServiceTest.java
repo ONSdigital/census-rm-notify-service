@@ -1,8 +1,7 @@
 package uk.gov.ons.census.notifysvc.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -91,7 +90,7 @@ class SmsRequestServiceTest {
   void testFetchNewUacQidPairIfRequiredEmptyTemplate() {
     // When
     Optional<UacQidCreatedPayloadDTO> actualUacQidCreated =
-        smsRequestService.fetchNewUacQidPairIfRequired(new String[] {});
+        smsRequestService.fetchNewUacQidPairIfRequired(1, new String[] {});
 
     // Then
     assertThat(actualUacQidCreated).isEmpty();
@@ -104,15 +103,32 @@ class SmsRequestServiceTest {
     UacQidCreatedPayloadDTO newUacQidCreated = new UacQidCreatedPayloadDTO();
     newUacQidCreated.setUac("TEST_UAC");
     newUacQidCreated.setUac("TEST_QID");
-    when(uacQidServiceClient.generateUacQid()).thenReturn(newUacQidCreated);
+    when(uacQidServiceClient.generateUacQid(1)).thenReturn(newUacQidCreated);
 
     // When
     Optional<UacQidCreatedPayloadDTO> actualUacQidCreated =
         smsRequestService.fetchNewUacQidPairIfRequired(
-            new String[] {TEMPLATE_UAC_KEY, TEMPLATE_QID_KEY});
+            1, new String[] {TEMPLATE_UAC_KEY, TEMPLATE_QID_KEY});
 
     // Then
     assertThat(actualUacQidCreated).contains(newUacQidCreated);
+  }
+
+  @Test
+  void testFetchNewUacQidPairIfRequiredUacAndQidFailureNoQuestionnaireType() {
+    // Given
+
+    // When
+    Exception thrownException =
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                smsRequestService.fetchNewUacQidPairIfRequired(
+                    null, new String[] {TEMPLATE_UAC_KEY, TEMPLATE_QID_KEY}));
+
+    // Then
+    assertThat(thrownException.getMessage())
+        .isEqualTo("SMS template is missing questionnaire type");
   }
 
   @Test

@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.ons.census.common.model.entity.EventType;
 import uk.gov.ons.census.common.model.entity.SmsTemplate;
 import uk.gov.ons.census.common.model.entity.Survey;
 import uk.gov.ons.census.notifysvc.client.UacQidServiceClient;
@@ -97,6 +98,11 @@ public class SmsRequestService {
     eventHeader.setDateTime(OffsetDateTime.now(Clock.systemUTC()));
     eventHeader.setVersion(Constants.OUTBOUND_EVENT_SCHEMA_VERSION);
     eventHeader.setMessageId(UUID.randomUUID());
+    if (smsConfirmation.isScheduled()) {
+      eventHeader.setMessageType(EventType.ACTION_RULE_SMS_CONFIRMATION);
+    } else {
+      eventHeader.setMessageType(EventType.SMS_FULFILMENT);
+    }
     enrichedSmsFulfilmentEvent.setHeader(eventHeader);
     enrichedSmsFulfilmentEvent.setPayload(new PayloadDTO());
     enrichedSmsFulfilmentEvent.getPayload().setSmsConfirmation(smsConfirmation);

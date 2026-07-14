@@ -21,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
+import uk.gov.ons.census.common.model.entity.EventType;
 import uk.gov.ons.census.common.model.entity.SmsTemplate;
 import uk.gov.ons.census.common.model.entity.Survey;
 import uk.gov.ons.census.notifysvc.client.UacQidServiceClient;
@@ -196,6 +197,8 @@ class SmsRequestServiceTest {
     assertThat(enrichedSmsFulfilmentHeader.getMessageId()).isNotNull();
     assertThat(enrichedSmsFulfilmentHeader.getTopic()).isEqualTo(smsFulfilmentTopic);
     assertThat(enrichedSmsFulfilmentHeader.getDateTime()).isNotNull();
+    assertThat(enrichedSmsFulfilmentHeader.getMessageType())
+        .isEqualTo(EventType.ACTION_RULE_SMS_CONFIRMATION);
 
     // Check the event payload
     SmsConfirmation smsConfirmation = enrichedSmsFulfilmentEvent.getPayload().getSmsConfirmation();

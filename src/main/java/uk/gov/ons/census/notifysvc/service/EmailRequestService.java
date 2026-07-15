@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.common.model.entity.EmailTemplate;
+import uk.gov.ons.census.common.model.entity.EventType;
 import uk.gov.ons.census.common.model.entity.Survey;
 import uk.gov.ons.census.common.validation.EmailRule;
 import uk.gov.ons.census.notifysvc.client.UacQidServiceClient;
@@ -97,6 +98,11 @@ public class EmailRequestService {
     eventHeader.setDateTime(OffsetDateTime.now(Clock.systemUTC()));
     eventHeader.setVersion(Constants.OUTBOUND_EVENT_SCHEMA_VERSION);
     eventHeader.setMessageId(UUID.randomUUID());
+    if (emailConfirmation.isScheduled()) {
+      eventHeader.setMessageType(EventType.ACTION_RULE_EMAIL_CONFIRMATION);
+    } else {
+      eventHeader.setMessageType(EventType.FULFILMENT_EMAIL_CONFIRMATION);
+    }
     enrichedEmailFulfilmentEvent.setHeader(eventHeader);
     enrichedEmailFulfilmentEvent.setPayload(new PayloadDTO());
     enrichedEmailFulfilmentEvent.getPayload().setEmailConfirmation(emailConfirmation);

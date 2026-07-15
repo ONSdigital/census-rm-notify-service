@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.ons.census.common.model.entity.EmailTemplate;
+import uk.gov.ons.census.common.model.entity.EventType;
 import uk.gov.ons.census.common.model.entity.Survey;
 import uk.gov.ons.census.notifysvc.client.UacQidServiceClient;
 import uk.gov.ons.census.notifysvc.model.dto.api.UacQidCreatedPayloadDTO;
@@ -190,6 +191,8 @@ class EmailRequestServiceTest {
     assertThat(enrichedEmailFulfilmentHeader.getMessageId()).isNotNull();
     assertThat(enrichedEmailFulfilmentHeader.getTopic()).isEqualTo(emailConfirmationTopic);
     assertThat(enrichedEmailFulfilmentHeader.getDateTime()).isNotNull();
+    assertThat(enrichedEmailFulfilmentHeader.getMessageType())
+        .isEqualTo(EventType.FULFILMENT_EMAIL_CONFIRMATION);
 
     // Check the event payload
     EmailConfirmation emailConfirmation =
@@ -241,6 +244,8 @@ class EmailRequestServiceTest {
     assertThat(enrichedEmailFulfilmentHeader.getMessageId()).isNotNull();
     assertThat(enrichedEmailFulfilmentHeader.getTopic()).isEqualTo(emailConfirmationTopic);
     assertThat(enrichedEmailFulfilmentHeader.getDateTime()).isNotNull();
+    assertThat(enrichedEmailFulfilmentHeader.getMessageType())
+        .isEqualTo(EventType.FULFILMENT_EMAIL_CONFIRMATION);
 
     // Check the event payload
     EmailConfirmation emailConfirmation =

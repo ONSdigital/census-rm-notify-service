@@ -101,7 +101,7 @@ public class EmailRequestService {
     if (emailConfirmation.isScheduled()) {
       eventHeader.setMessageType(EventType.ACTION_RULE_EMAIL_CONFIRMATION);
     } else {
-      eventHeader.setMessageType(EventType.EMAIL_FULFILMENT);
+      eventHeader.setMessageType(EventType.FULFILMENT_EMAIL_CONFIRMATION);
     }
     enrichedEmailFulfilmentEvent.setHeader(eventHeader);
     enrichedEmailFulfilmentEvent.setPayload(new PayloadDTO());

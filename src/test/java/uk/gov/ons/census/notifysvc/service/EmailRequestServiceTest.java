@@ -191,6 +191,8 @@ class EmailRequestServiceTest {
     assertThat(enrichedEmailFulfilmentHeader.getMessageId()).isNotNull();
     assertThat(enrichedEmailFulfilmentHeader.getTopic()).isEqualTo(emailConfirmationTopic);
     assertThat(enrichedEmailFulfilmentHeader.getDateTime()).isNotNull();
+    assertThat(enrichedEmailFulfilmentHeader.getMessageType())
+        .isEqualTo(EventType.FULFILMENT_EMAIL_CONFIRMATION);
 
     // Check the event payload
     EmailConfirmation emailConfirmation =
@@ -243,7 +245,7 @@ class EmailRequestServiceTest {
     assertThat(enrichedEmailFulfilmentHeader.getTopic()).isEqualTo(emailConfirmationTopic);
     assertThat(enrichedEmailFulfilmentHeader.getDateTime()).isNotNull();
     assertThat(enrichedEmailFulfilmentHeader.getMessageType())
-        .isEqualTo(EventType.EMAIL_FULFILMENT);
+        .isEqualTo(EventType.FULFILMENT_EMAIL_CONFIRMATION);
 
     // Check the event payload
     EmailConfirmation emailConfirmation =

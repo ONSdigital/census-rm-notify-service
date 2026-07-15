@@ -101,7 +101,7 @@ public class SmsRequestService {
     if (smsConfirmation.isScheduled()) {
       eventHeader.setMessageType(EventType.ACTION_RULE_SMS_CONFIRMATION);
     } else {
-      eventHeader.setMessageType(EventType.SMS_FULFILMENT);
+      eventHeader.setMessageType(EventType.FULFILMENT_SMS_CONFIRMATION);
     }
     enrichedSmsFulfilmentEvent.setHeader(eventHeader);
     enrichedSmsFulfilmentEvent.setPayload(new PayloadDTO());

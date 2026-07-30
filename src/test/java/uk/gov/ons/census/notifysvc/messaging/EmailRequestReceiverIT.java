@@ -137,7 +137,7 @@ class EmailRequestReceiverIT {
     Case testCase = new Case();
     testCase.setId(UUID.randomUUID());
     testCase.setCollectionExercise(collectionExercise);
-    testCase.setTreatmentCode("HH_QP3E");
+    testCase.setTreatmentCode("HH_PSLE");
     testCase.setAddressType("H");
     testCase.setUprn("1234567890");
     testCase.setEstabUprn("1234567890");
@@ -155,8 +155,7 @@ class EmailRequestReceiverIT {
     testCase.setLsoa("A12345678");
     testCase.setMsoa("A12345678");
     testCase.setLad("ABC123");
-    testCase.setHtcDigital("1");
-    testCase.setHtcWillingness("1");
+    testCase.setHtc("1");
     testCase.setLatitude("51.5074");
     testCase.setLongitude("0.1278");
     testCase.setPrintBatch("1");

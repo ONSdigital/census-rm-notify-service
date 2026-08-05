@@ -155,7 +155,8 @@ class EmailRequestReceiverIT {
     testCase.setLsoa("A12345678");
     testCase.setMsoa("A12345678");
     testCase.setLad("ABC123");
-    testCase.setHtc("1");
+    testCase.setHtcDigital("1");
+    testCase.setHtcWillingness("1");
     testCase.setLatitude("51.5074");
     testCase.setLongitude("0.1278");
     testCase.setPrintBatch("1");

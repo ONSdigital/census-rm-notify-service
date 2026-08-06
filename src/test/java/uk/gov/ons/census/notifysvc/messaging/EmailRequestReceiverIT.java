@@ -137,7 +137,7 @@ class EmailRequestReceiverIT {
     Case testCase = new Case();
     testCase.setId(UUID.randomUUID());
     testCase.setCollectionExercise(collectionExercise);
-    testCase.setTreatmentCode("HH_QP3E");
+    testCase.setTreatmentCode("HH_PSLE");
     testCase.setAddressType("H");
     testCase.setUprn("1234567890");
     testCase.setEstabUprn("1234567890");

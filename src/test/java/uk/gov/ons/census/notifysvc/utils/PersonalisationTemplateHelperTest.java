@@ -40,7 +40,7 @@ class PersonalisationTemplateHelperTest {
 
   private static @NonNull Case getTestCase() {
     Case testCase = new Case();
-    testCase.setTreatmentCode("HH_QP3E");
+    testCase.setTreatmentCode("HH_PSLE");
     testCase.setAddressType("H");
     testCase.setUprn("1234567890");
     testCase.setEstabUprn("1234567890");

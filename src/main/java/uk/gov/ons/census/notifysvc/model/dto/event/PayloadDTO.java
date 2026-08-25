@@ -9,7 +9,6 @@ import lombok.Data;
 public class PayloadDTO {
 
   private SmsConfirmation smsConfirmation;
-  private SmsRequest smsRequest;
   private SmsRequestEnriched smsRequestEnriched;
   private EmailConfirmation emailConfirmation;
   private EmailRequest emailRequest;

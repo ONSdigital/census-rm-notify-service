@@ -17,9 +17,6 @@ public class MessageConsumerConfig {
   private final ManagedMessageRecoverer managedMessageRecoverer;
   private final PubSubTemplate pubSubTemplate;
 
-  @Value("${queueconfig.sms-request-subscription}")
-  private String smsRequestSubscription;
-
   @Value("${queueconfig.sms-request-enriched-subscription}")
   private String smsRequestEnrichedSubscription;
 
@@ -36,11 +33,6 @@ public class MessageConsumerConfig {
   }
 
   @Bean
-  public MessageChannel smsRequestInputChannel() {
-    return new DirectChannel();
-  }
-
-  @Bean
   public MessageChannel smsRequestEnrichedInputChannel() {
     return new DirectChannel();
   }
@@ -53,12 +45,6 @@ public class MessageConsumerConfig {
   @Bean
   public MessageChannel emailRequestEnrichedInputChannel() {
     return new DirectChannel();
-  }
-
-  @Bean
-  public PubSubInboundChannelAdapter smsRequestInbound(
-      @Qualifier("smsRequestInputChannel") MessageChannel channel) {
-    return makeAdapter(channel, smsRequestSubscription);
   }
 
   @Bean

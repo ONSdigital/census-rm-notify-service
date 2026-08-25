@@ -6,8 +6,8 @@ import static uk.gov.ons.census.notifysvc.utils.Constants.TEMPLATE_REQUEST_PREFI
 import static uk.gov.ons.census.notifysvc.utils.Constants.TEMPLATE_UAC_KEY;
 
 import java.util.Map;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.Test;
+import org.springframework.lang.NonNull;
 import uk.gov.ons.census.common.model.entity.Case;
 
 class PersonalisationTemplateHelperTest {

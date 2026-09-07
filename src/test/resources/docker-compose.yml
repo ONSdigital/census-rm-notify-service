@@ -2,7 +2,7 @@ version: '2.1'
 services:
   postgres-notify-service-it:
     container_name: postgres-notify-service-it
-    image: census-rm-dev-common-postgres:latest
+    image: europe-west2-docker.pkg.dev/c31-rm-ci-prod/rm-docker-snapshot/census31-rm-dev-common-postgres:latest
     command: ["-c", "shared_buffers=256MB", "-c", "max_connections=500"]
     ports:
       - "15435:5432"
@@ -31,13 +31,13 @@ services:
 
   pubsub-emulator-notify-service-it:
     container_name: pubsub-emulator-notify-service-it
-    image: gcloud-pubsub-emulator:latest
+    image: europe-west2-docker.pkg.dev/c31-rm-ci-prod/rm-docker-snapshot/gcloud-pubsub-emulator:latest
     ports:
       - "18540:8538"
 
   setup-pubsub-emulator-notify-service-it:
     container_name: setup-pubsub-emulator-notify-service-it
-    image: gcloud-pubsub-emulator:latest
+    image: europe-west2-docker.pkg.dev/c31-rm-ci-prod/rm-docker-snapshot/gcloud-pubsub-emulator:latest
     environment:
       - PUBSUB_SETUP_HOST=pubsub-emulator-notify-service-it:8538
     volumes:

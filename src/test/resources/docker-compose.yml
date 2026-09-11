@@ -14,7 +14,7 @@ services:
 
   uac-qid-notify-service-it:
     container_name: uac-qid-notify-service-it
-    image: census-rm-uac-qid-service:latest
+    image: europe-west2-docker.pkg.dev/c31-rm-ci-prod/rm-docker-snapshot/census31-rm-uac-qid-service:latest
     restart: always
     ports:
       - "18166:8164"
